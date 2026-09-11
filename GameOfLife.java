@@ -13,6 +13,9 @@ public class GameOfLife {
 
     private boolean[][] society;
 
+    private int rows;
+    private int cols;
+
     /**
      * Creates an empty society with the requested number of rows and columns.
      */
@@ -21,37 +24,48 @@ public class GameOfLife {
             throw new IllegalArgumentException("Rows and columns must be positive.");
         }
 
-        
+        this.rows = rows;
+        this.cols = cols;
+
+        society = new boolean[rows][cols];
     }
 
     /** Returns the number of rows in the society. */
     public int numberOfRows() {
-        return -1;
+        return rows;
     }
 
     /** Returns the number of columns in the society. */
     public int numberOfColumns() {
-        return -1;
+        return cols;
     }
 
     /** Makes the location at row, col alive. */
     public void growCellAt(int row, int col) {
-        
+        society[row][col] = true;
     }
 
     /** Makes the location at row, col dead. */
     public void killCellAt(int row, int col) {
-        
+        society[row][col] = false;
     }
 
     /** Returns true if the location contains a live cell. */
     public boolean cellAt(int row, int col) {
+        if  (row >= 0 && row < rows && col >= 0 && col < cols) {
+            return society[row][col];
+        }
+
         return false;
     }
 
     /** Makes every location in the society dead. */
     public void clear() {
-        
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                society[i][j] = false;
+            }
+        }
     }
 
     /**
@@ -67,7 +81,17 @@ public class GameOfLife {
         //       Skip row, col itself.
         //       Check bounds before reading society[r][c].
 
-        return 0;
+        int neighbors = 0;
+        for (int r = row-1; r < row+1; r++) {
+            for (int c = col-1; c < col+1; c++) {
+                if ((r != row && c != row) && cellAt(r, c)) {
+                    neighbors++;
+                }
+            }
+        }
+
+
+        return neighbors;
     }
 
     /**
@@ -83,11 +107,40 @@ public class GameOfLife {
      */
     public void update() {
         // TODO: Create a SECOND 2D boolean array for the next generation.
-        //
-        // IMPORTANT:
-        // Do not change society while you are still using it to calculate
-        // neighbors. Every cell in the new generation must be based on the
-        // same old generation.
+
+        boolean[][] newSociety = new boolean[rows][cols];
+
+        for (int r  = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (cellAt(r,c) == true) {
+                    // alive
+                    int neighbors = neighborCount(r,c);
+                    if (neighbors < 2) {
+                        // underpopulation
+                        newSociety[r][c] = false;
+                        continue;
+                    } else if  (neighbors == 2 || neighbors == 3) {
+                        // stays alive
+                        newSociety[r][c] = true;
+                        continue;
+                    } else if  (neighbors > 3) {
+                        // overpopulation
+                        newSociety[r][c] = false;
+                        continue;
+                    }
+                } else {
+                    // dead
+                    if (neighborCount(r,c) == 3) {
+                        // neighbors
+                        newSociety[r][c] = true;
+                        continue;
+                    }
+                }
+                newSociety[r][c] = society[r][c];
+            }
+        }
+
+        society = newSociety;
     }
 
     /**
@@ -102,6 +155,19 @@ public class GameOfLife {
         // TODO: Use nested loops to build one String containing the board.
         //       Add a newline after every row.
 
-        return "Complete toString() to display the text version of the board.\n";
+        String board = "";
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if  (cellAt(r,c) == true) {
+                    board += "O";
+                } else {
+                    board += ".";
+                }
+            }
+            board += "\n";
+        }
+
+        return board;
     }
 }
