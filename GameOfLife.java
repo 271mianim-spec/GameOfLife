@@ -53,6 +53,8 @@ public class GameOfLife {
     /** Returns true if the location contains a live cell. */
     public boolean cellAt(int row, int col) {
         if  (row >= 0 && row < rows && col >= 0 && col < cols) {
+//            System.out.println(society[row][col]);
+//            System.out.println("... for cell at "+row+","+col);
             return society[row][col];
         }
 
@@ -82,14 +84,23 @@ public class GameOfLife {
         //       Check bounds before reading society[r][c].
 
         int neighbors = 0;
-        for (int r = row-1; r < row+1; r++) {
-            for (int c = col-1; c < col+1; c++) {
-                if ((r != row && c != row) && cellAt(r, c)) {
-                    neighbors++;
+//        for (int r = row-1; r < row+1; r++) {
+//            for (int c = col-1; c < col+1; c++) {
+//                if ((r != row && c != row) && cellAt(r, c)) {
+//                    neighbors++;
+//                }
+//            }
+//        }
+
+        for (int r = row - 1; r <= row + 1; r++) {
+            for (int c = col - 1; c <= col + 1; c++) {
+                if (!(r == row && c == col)) {
+                    if (cellAt(r, c)) {
+                        neighbors++;
+                    }
                 }
             }
         }
-
 
         return neighbors;
     }
@@ -110,9 +121,9 @@ public class GameOfLife {
 
         boolean[][] newSociety = new boolean[rows][cols];
 
-        for (int r  = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                if (cellAt(r,c) == true) {
+        for (int c  = 0; c < cols; c++) {
+            for (int r = 0; r < rows; r++) {
+                if (cellAt(r, c)) {
                     // alive
                     int neighbors = neighborCount(r,c);
                     if (neighbors < 2) {
@@ -123,7 +134,7 @@ public class GameOfLife {
                         // stays alive
                         newSociety[r][c] = true;
                         continue;
-                    } else if  (neighbors > 3) {
+                    } else if (neighbors > 3) {
                         // overpopulation
                         newSociety[r][c] = false;
                         continue;
@@ -133,6 +144,9 @@ public class GameOfLife {
                     if (neighborCount(r,c) == 3) {
                         // neighbors
                         newSociety[r][c] = true;
+                        continue;
+                    } else {
+                        newSociety[r][c] = false;
                         continue;
                     }
                 }
@@ -155,19 +169,19 @@ public class GameOfLife {
         // TODO: Use nested loops to build one String containing the board.
         //       Add a newline after every row.
 
-        String board = "";
+        StringBuilder board = new StringBuilder();
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                if  (cellAt(r,c) == true) {
-                    board += "O";
+                if  (cellAt(r, c)) {
+                    board.append("O");
                 } else {
-                    board += ".";
+                    board.append(".");
                 }
             }
-            board += "\n";
+            board.append("\n");
         }
 
-        return board;
+        return board.toString();
     }
 }
