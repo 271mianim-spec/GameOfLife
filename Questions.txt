@@ -1,0 +1,21 @@
+1. The Game of Life is a ran on a 2D grid, which make 2D Arrays a perfect fit
+
+2. society.length would represent the number of columns, and society[row].length would represent the
+number of cells in that row. This is because the society array stores each row, and each row then stores
+it's contents
+
+3. Changing the society while it is running would cause the board to react to changes that haven't been
+shown to the player yet. This would mean the rules would certainly be broken.
+
+4. If the array tries to read a cell outside the board (essentially a cell that does not exist), it'll
+cause an ArrayOutOfBounds exception
+
+5. The board would react to changes that haven't been displayed to the player yet and as a result the rules would
+certainly be broken
+
+6. Since the Game Of Life is only represented by two colors (in our case black and white), it can be translated
+into both graphics (by drawing squares on a grid based on the contents of the soceity 2D Array) and text (by
+creating a string with each row being on it's own line, and each row using two characters/symbols to represent
+dead or alive cells)
+
+7

@@ -47,19 +47,20 @@ public class GameOfLifeApp extends JFrame {
 
         generation = 0;
 
-        timer = new Timer((int)(DELAY*((double)(speedSlider.getValue())/10)), new ActionListener() {
+        timer = new Timer((int)(DELAY*((double)(speedSlider.getValue())/3)), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 stepGeneration();
             }
         });
+        updateSpeedLabel();
 
         buildWindow();
         refreshDisplay();
     }
 
     private void startTimer() {
-        timer = new Timer((int)(DELAY/((double)(speedSlider.getValue())/10)), new ActionListener() {
+        timer = new Timer((int)(DELAY/((double)(speedSlider.getValue())/3)), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 stepGeneration();
@@ -170,11 +171,7 @@ public class GameOfLifeApp extends JFrame {
     }
 
     private void stepGeneration() {
-        if (touchesWall()) {
-            stopAnimation();
-            statusLabel.setText("A live cell reached the wall. Animation stopped.");
-            return;
-        }
+
 
         game.update();
         generation++;
@@ -239,21 +236,6 @@ public class GameOfLifeApp extends JFrame {
     }
 
     private boolean touchesWall() {
-        int lastRow = game.numberOfRows() - 1;
-        int lastCol = game.numberOfColumns() - 1;
-
-        for (int col = 0; col < game.numberOfColumns(); col++) {
-            if (game.cellAt(0, col) || game.cellAt(lastRow, col)) {
-                return true;
-            }
-        }
-
-        for (int row = 0; row < game.numberOfRows(); row++) {
-            if (game.cellAt(row, 0) || game.cellAt(row, lastCol)) {
-                return true;
-            }
-        }
-
         return false;
     }
 
