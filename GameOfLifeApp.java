@@ -6,16 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+import javax.swing.*;
 
 /**
  * A simple GUI + text viewer for the GameOfLife model.
@@ -24,8 +15,8 @@ import javax.swing.Timer;
  */
 public class GameOfLifeApp extends JFrame {
 
-    private static final int ROWS = 15;
-    private static final int COLS = 25;
+    private static final int ROWS = 40;
+    private static final int COLS = 60;
     private static final int DELAY = 350;
 
     private final GameOfLife game;
@@ -35,8 +26,10 @@ public class GameOfLifeApp extends JFrame {
     private final JLabel generationLabel;
     private final JLabel statusLabel;
     private final JTextArea textView;
+    private final JSlider speedSlider;
+    private final JLabel speedLabel;
 
-    private final Timer timer;
+    private Timer timer;
     private int generation;
 
     public GameOfLifeApp() {
@@ -49,10 +42,12 @@ public class GameOfLifeApp extends JFrame {
         generationLabel = new JLabel("Generation: 0");
         statusLabel = new JLabel("Click cells to create a pattern, or add a glider.");
         textView = new JTextArea();
+        speedSlider = new JSlider(1, 50, 10);
+        speedLabel = new JLabel("Speed: 0");
 
         generation = 0;
 
-        timer = new Timer(DELAY, new ActionListener() {
+        timer = new Timer((int)(DELAY*((double)(speedSlider.getValue())/10)), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 stepGeneration();
@@ -61,6 +56,16 @@ public class GameOfLifeApp extends JFrame {
 
         buildWindow();
         refreshDisplay();
+    }
+
+    private void startTimer() {
+        timer = new Timer((int)(DELAY/((double)(speedSlider.getValue())/10)), new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stepGeneration();
+            }
+        });
+        timer.start();
     }
 
     private void buildWindow() {
@@ -86,14 +91,25 @@ public class GameOfLifeApp extends JFrame {
         startButton.addActionListener(e -> toggleAnimation());
         clearButton.addActionListener(e -> clearBoard());
         gliderButton.addActionListener(e -> addGlider());
+        speedSlider.addChangeListener(e -> updateSpeedLabel());
 
         controls.add(stepButton);
         controls.add(startButton);
         controls.add(clearButton);
         controls.add(gliderButton);
+        controls.add(speedSlider);
+        controls.add(speedLabel);
         controls.add(generationLabel);
 
         return controls;
+    }
+
+    private void updateSpeedLabel() {
+        speedLabel.setText("Speed: " + speedSlider.getValue());
+        if (timer.isRunning()) {
+            timer.stop();
+            startTimer();
+        }
     }
 
     private JSplitPane buildMainPanel() {
@@ -184,7 +200,7 @@ public class GameOfLifeApp extends JFrame {
                 return;
             }
 
-            timer.start();
+            startTimer();
             startButton.setText("Stop");
             statusLabel.setText("Animation running...");
         }
